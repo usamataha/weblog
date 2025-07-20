@@ -1,0 +1,45 @@
+extends layout
+
+block content
+
+    form(method="post" autocomplete="on")
+
+        fieldset(class= "row")
+
+            legend
+                h2 #{title}
+            
+            label(class="formLabels" for="title") Title:
+            input(class="formInputs" id="title", type="text", 
+            placeholder="Tutorial Title" name="title" required value=`${tutorial.title}`)
+
+            label(class="formLabels" for="summary") Summary:
+            textarea(class="formInputs" id="summary", type="text", 
+            placeholder="Tutorial Summary" name="summary" required) #{tutorial.summary}
+
+            label(class="formLabels" for="tutorial_url") Tutorial URL:
+            input(class="formInputs" id="tutorial_url", type="url", 
+            placeholder="Tutorial URL" name="tutorial_url" required value=`${tutorial.tutorial_url}`)
+
+            label(class="formLabels" for="cover_s_url") Tutorial Cover (Small) URL:
+            input(class="formInputs" id="cover_s_url", type="text", 
+            placeholder="Tutorial Cover (Small) URL" name="cover_s_url" value=`${tutorial.cover_s_url}`)
+
+            label(class="formLabels" for="cover_l_url") Tutorial Cover (Large) URL:
+            input(class="formInputs" id="cover_l_url", type="text", 
+            placeholder="Tutorial Cover (Large) URL" name="cover_l_url" value=`${tutorial.cover_l_url}`)
+
+            label(class="formLabels" for="tags") Tags:
+            div(class="formInputs" id="tags")
+                for tag in tags
+                    div(class="CheckBoxContainer")
+                        if tag.checked
+                            input(id=tag._id, value=tag._id, name="tag", type="checkbox", checked)
+                        else
+                            input(id=tag._id, value=tag._id, name="tag", type="checkbox")
+                        label(for=tag._id) &nbsp;#{tag.name}
+
+            div(class="formButtons")
+                button(id="submit" type="submit") Submit
+                a(class="alert" onclick=`confirmRedirect('${tutorial.url}/delete')`) Delete
+

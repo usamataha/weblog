@@ -1,0 +1,31 @@
+extends layout
+
+block content
+
+    form(method="post" autocomplete="on")
+
+        fieldset(class= "row")
+
+            legend
+                h2 #{title}
+            
+            label(class="formLabels" for="name") Name:
+            input(class="formInputs" id="name", type="text", 
+            placeholder="Tag Name" name="name" required value=`${tag.name}`)
+
+            label(class="formLabels" for="summary") Summary:
+            textarea(class="formInputs" id="summary", type="text", 
+            placeholder="Tag Summary" name="summary" required) #{tag.summary}
+
+            label(class="formLabels" for="cover_s_url") Tag Cover (Small) URL:
+            input(class="formInputs" id="cover_s_url", type="text", 
+            placeholder="Tag Cover (Small) URL" name="cover_s_url" value=`${tag.cover_s_url}`)
+
+            label(class="formLabels" for="cover_l_url") Tag Cover (Large) URL:
+            input(class="formInputs" id="cover_l_url", type="text", 
+            placeholder="Tag Cover (Large) URL" name="cover_l_url" value=`${tag.cover_l_url}`)
+
+            div(class="formButtons")
+                button(id="submit" type="submit") Submit
+                a(class="alert" onclick=`confirmRedirect('${tag.url}/delete')`) Delete
+

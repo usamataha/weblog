@@ -1,0 +1,11 @@
+extends sideNav
+block fullPageContent
+  div(id="homePageIntro" class="column")
+    h2(locKey="Weblog Title") Welcome to my Weblog!
+    p(locKey="Weblog Introduction")
+      br
+      | You are more than welcome to
+      a(href="/users/login") login
+      | or
+      a(href="/users/signup") register
+      | in order to browse the content, or talk about it.

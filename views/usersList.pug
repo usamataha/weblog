@@ -1,0 +1,43 @@
+extends layout
+
+block content
+    div(class="fullPage")
+        if users.length
+            table(class="itemsList")
+                thead
+                    tr
+                        th User Name
+                        th Status
+                        th Control
+                        th Created
+                tbody
+                    - for (var i = 0; i < users.length; i++) {
+                        tr
+                            td
+                                p() #{users[i].user_name}
+                            td
+                                if users[i].verified
+                                    span(title = "Verified") ✅
+                                if users[i].role === "admin"
+                                    span(title = "Admin") 🔼
+                                if users[i].role === "moderator"
+                                    span(title = "Moderator") 🔼🔼
+                                if users[i].banned_until > Date.now()
+                                    span(title = "Banned") ⛔
+                                if users[i].blacklisted
+                                    span(title = "Blacklisted") 🔳
+                            td
+                                a(href=users[i].url + "/verify/" + users[i].emailToken title="Verify") ✅
+                                a(href=users[i].url + "/email/" title="Send email") 📧
+                                a(href=users[i].url + "/promote" title="Promote") 🔼
+                                a(href=users[i].url + "/demote" title="Demote") 🔽
+                                - var banDurationHR = parseInt(`${banDuration}` / 3600000);
+                                a(onclick=`confirmRedirect('${users[i].url}/ban')` title=`Ban (${banDurationHR} hrs)`) ⛔
+                                a(href=users[i].url + "/unban" title="Unban") 🟢
+                                a(onclick=`confirmRedirect('${users[i].url}/blacklist')` title="Black list") 🔳
+                                a(href=users[i].url + "/whitelist"  title="Whitelist") 🔲
+                                a(onclick=`confirmRedirect('${users[i].url}/delete', "Deleting a user. This can't be undone!")` title="Delete") ❌
+                            td #{created[i]}
+                    - }
+        else
+            p &emsp; No Users

@@ -1,0 +1,78 @@
+extends layout
+
+block content
+
+  div(id="homePage" class="row")
+  
+    div(id="quickAccess" class="column")
+      p(class="quickAccessBtn" onclick="openTab(event, 'ContentsTab')" title="Catalog")
+          img(src="/images/icon_content.svg" alt="Catalog")
+      p(class="quickAccessBtn" onclick="openTab(event, 'SearchTab')" title="Search")
+          img(src="/images/icon_search.svg" alt="Search")
+      p(class="quickAccessBtn" onclick="openTab(event, 'AppsTab')" title="Apps")
+          img(src="/images/icon_apps.svg" alt="Apps")
+
+    div(id="sideBar" class="column")
+        div(id="ContentsTab" name="sideTab")
+            details()
+                summary(locKey="Tutorials") Tutorials
+                if tutorials.length
+                    each tutorial in tutorials
+                        a(href=`${tutorial.url}/details`) &emsp; #{tutorial.title}
+                        br
+            details()
+                summary(locKey="Videos") Videos
+                if videos.length
+                    each video in videos
+                        a(href=`${video.url}/details`) &emsp; #{video.title}
+                        br
+            details()
+                summary(locKey="Books") Books
+                if books.length
+                    each book in books
+                        a(href=`${book.url}/details`) &emsp; #{book.title}
+                        br
+            details()
+                summary(locKey="Tags") Tags
+                if tags.length
+                    each tag in tags
+                        a(href=`${tag.url}/details`) &emsp; #{tag.name}
+                        br
+
+        div(id="SearchTab" name="sideTab")
+            form(id="searchForm" method="post" autocomplete="on" action="/search" onsubmit="displaySearchResults(event, this, searchFormResults)")
+                fieldset(class="row")
+                    p(class="formLabels" locKey="Title Search") - #[u Search in #[b TITLES] of]:
+                    div(class="formInputs" id="options")
+                        div(class="CheckBoxContainer")
+                            input(id="booksOption", value="booksOption", name="booksOption", type="checkbox" checked)
+                            label(for="booksOption" locKey="Books") &nbsp;Books
+                        div(class="CheckBoxContainer")
+                            input(id="tutorialsOption", value="tutorialsOption", name="tutorialsOption", type="checkbox" checked)
+                            label(for="tutorialsOption" locKey="Tutorials") &nbsp;Tutorials
+                        div(class="CheckBoxContainer")
+                            input(id="videosOption", value="videosOption", name="videosOption", type="checkbox" checked)
+                            label(for="videosOption" locKey="Videos") &nbsp;Videos
+
+                    p(class="formLabels" for="keywords" locKey="Keyword Search") - #[u By #[b ANY] of these keywords]:
+                    input(class="formInputs" id="keywords", type="search", placeholder="Keyword ( /./,/-/+) Keyword" name="keywordFilter" required oninput="javascript:searchFormResults.innerHTML='';")
+
+                    p(class="formLabels" locKey="Tag Filter") - #[u Returning #[b ONLY] those Tags]:
+                    div(class="formInputs")
+                        for tag in tags
+                            div(class="CheckBoxContainer")
+                                input(id=tag._id, value=tag._id, name="tagFilter", type="checkbox" checked)
+                                label(for=tag._id) &nbsp;#{tag.name}
+
+                    div(class="formButtons")
+                        button(id="search" type="submit" locKey="Search") Search
+                    div(id="searchFormResults")
+
+        div(id="AppsTab" name="sideTab")
+            div(class="svgBox" title="Chat App" onclick="window.location.href='apps/chat';" locKeyTitle="Chat App")
+                svg(class="inlineSVG" viewbox="0 0 60 60")
+                    path(d="M 42,15.5 H 5.93 C 2.66,15.5 0,18.16 0,21.429 V 42.57 c 0,3.27 2.66,5.93 5.93,5.93 H 12 v 10 c 0,0.413 0.254,0.784 0.64,0.933 0.117,0.045 0.239,0.067 0.36,0.067 0.276,0 0.547,-0.115 0.74,-0.327 L 23.442,48.5 H 42 c 3.27,0 5.93,-2.66 5.93,-5.929 V 21.43 C 47.93,18.16 45.27,15.5 42,15.5 Z")
+                    path(d="M 54.072,0.57 19.93,0.5 C 16.66,0.5 14,3.16 14,6.43 v 6.122 c 0,0.266 0.105,0.52 0.293,0.708 0.188,0.187 0.442,0.292 0.707,0.292 0,0 10e-4,0 0.002,0 L 40.07,13.5 c 8.951,0 9.93,2.021 9.93,7.93 v 21.141 c 0,0.091 -0.01,0.181 -0.014,0.271 l 1.274,1.401 c 0.193,0.212 0.463,0.327 0.74,0.327 0.121,0 0.243,-0.022 0.361,-0.067 C 52.746,44.354 53,43.983 53,43.57 v -10 h 1.07 c 3.27,0 5.93,-2.66 5.93,-5.929 V 6.5 C 60,3.23 57.34,0.57 54.072,0.57 Z")
+
+    block fullPageContent
+    

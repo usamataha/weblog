@@ -1,0 +1,33 @@
+extends layout
+
+block content
+
+  form(method="post" autocomplete="on" action="/users/login" onsubmit="userLogin(event, this)")
+    br
+    p(locKey="Not verified") &emsp; #[u New users have to verify their account first.]
+    p(locKey="Not verified") &emsp; #[u Please follow the link emailed to your account.]
+
+    fieldset(class= "row")
+
+      legend
+        h2(locKey="Login") Login
+      
+      label(class="formLabels" for="user_name" locKey="User Name:") User Name:
+      input(class="formInputs" id="user_name" type="text" placeholder="User Name" name="user_name" required)
+
+      label(class="formLabels" for="password" locKey="Password:") Password:
+      input(class="formInputs" id="password" type="password" placeholder="Password" name="password" required)
+
+      div(class="formButtons")
+        button(id="submit" type="submit" locKey="Submit") Submit
+
+    br
+    p(locKey="No account redirect") &emsp; Don't have an account yet? 
+      a(href="/users/signup") Sign Up
+      |  here
+    br
+    p(locKey="Password reset redirect") &emsp; Forgot your password? Request a 
+      a(href="/users/resetpassword") Reset
+      |  link here
+
+

@@ -1,0 +1,10 @@
+block content
+
+  h3= message
+  h4= error.status
+
+  p
+    pre #{error.stack}
+
+  button(onclick="javascript:window.history.back();") ◀ Go Back
+

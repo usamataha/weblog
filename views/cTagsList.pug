@@ -1,0 +1,16 @@
+extends layout
+
+block content
+
+    div(class="fullPage")
+        div(class="catalogItems")
+            if tags.length
+                each tag in tags
+                    div(class="catalogItem")
+                        div(class="dataDiv")
+                            img(src=tag.cover_s_url alt=`${tag.name}`)
+                            p(class="title") #{tag.name}
+
+                        div(class="navDiv")
+                            p(class="link")
+                                a(href=`${tag.url}/details`) Browse

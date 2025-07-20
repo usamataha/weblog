@@ -1,0 +1,26 @@
+extends layout
+
+block content
+
+  form(method="post" autocomplete="on")
+
+    fieldset(class= "row")
+
+      legend
+        h2(locKey="Send Email") Send Email
+      
+      label(class="formLabels" for="subject" locKey="Subject:") Subject:
+      input(class="formInputs" id="subject", type="text", placeholder="Subject ..." name="subject" required value="")
+      
+      label(class="formLabels" for="message" locKey="Message:") Message:
+      textarea(class="formInputs" id="message", type="text", placeholder="HTML Formatted Message ..." name="message" required)
+
+      div(class="formButtons")
+        button(id="reset" type="reset" locKey="Reset") Reset
+        button(id="submit" type="submit" locKey="Submit") Submit
+
+      div(class="formErrors")
+        if validatorErrors
+          ul(class = "error")
+            for error in validatorErrors
+              li!= error.msg

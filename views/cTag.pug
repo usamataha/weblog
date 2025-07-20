@@ -1,0 +1,15 @@
+extends layout
+
+block content
+
+    div(class="fullPage")
+        div(class="summary")
+            img(src=tag.cover_l_url alt=`${tag.name}`)
+            h2 #{tag.name}
+            br
+            p() #{tag.summary}
+
+        div(class="catalogItems")
+            include ./cTutorialsBlock.pug
+            include ./cVideosBlock.pug
+            include ./cBooksBlock.pug

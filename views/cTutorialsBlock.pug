@@ -1,0 +1,19 @@
+if tutorials.length
+
+    each tutorial in tutorials
+
+        div(class="catalogItem")
+            div(class="dataDiv")
+                img(src=tutorial.cover_s_url alt=`${tutorial.title}`)
+                p(class="title") #{tutorial.title}
+                p(class="subtitle") #{tutorial.date_added.toLocaleString("en-GB", { year: "numeric", month: "long", day: "numeric" })}  
+            
+            div(class="navDiv")
+                p(class="tags")
+                    - var tags = tutorial.tag;
+                    if tags.length
+                        each tag in tags
+                            a(href=`${tag.url}/details`) #{tag.name}
+
+                p(class="link")
+                    a(href=`${tutorial.url}/details`) Read

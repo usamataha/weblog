@@ -1,0 +1,31 @@
+extends layout
+
+block content
+
+  form(method="post" autocomplete="on")
+
+    fieldset(class= "row")
+
+      legend
+        h2(locKey="Reset Password") Reset Password
+
+      label(class="formLabels" id="user_name_lbl" for="user_name" name="user_name" style="visibility: hidden;" locKey="User Name:") User Name:
+      input(class="formInputs" id="user_name" type="text" placeholder="User Name" name="user_name" value="" style="visibility: hidden;")
+
+      label(class="formLabels" id="email_lbl" for="email" name="email" locKey="Email:") Email:
+      input(class="formInputs" id="email" type="email" placeholder="Email" name="email" value="")
+      
+      div(class="formButtons")
+        button(id="submit" type="submit" locKey="Submit") Submit
+        p
+          u( locKey="Select Option:") Select Option:
+        input(class="formInputs" type="radio" id="emailOption" name="options" value="Email" checked onclick="showElements('email'); hideElements('user_name');")
+        label(class="formLabels" for="emailOption" locKey="Email") Email &emsp;
+        input(class="formInputs" type="radio" id="usernameOption" name="options" value="User Name" onclick="showElements('user_name'); hideElements('email');")
+        label(class="formLabels" for="usernameOption" locKey="User Name") User Name
+
+      div(class="formErrors")
+        if validatorErrors
+          ul(class = "error")
+            for error in validatorErrors
+              li!= error.msg

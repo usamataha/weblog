@@ -1,0 +1,304 @@
+extends layout
+
+block content
+
+    div(class="fullPage")
+    
+        div(id="activeUsersList")
+        div(id="messagesList")
+        p(id="notification")
+        div(id="bottomLayout")
+            button(type="button" onclick="toggleUsersList()" title="User's list") 🗣️
+            input(id ="inputField" type="text" placeholder="Type a message. Press 'Enter' to send.")
+
+        div(id="contextMenu")
+            p(onclick = "PMUser()" class= "privateMessage" title="Intiate a message visible to this user only." locKey="Private Message") Private Message
+            p(onclick = "MentionUser()" class= "mentionMessage" title="Intiate a message to all. Notify this user visually." locKey="Mention") Mention
+            p(onclick = "KickUser()" class= "kick" title="Admin or better. Kick user out of the chat." locKey="Kick") Kick
+            p(onclick = "BanUser()" class= "ban" title= "Admin or better. Kick + Ban user from the site." locKey="Ban") Ban
+            p(onclick = "CancelHandling()" title="Cancel all pending messages" locKey="Cancel") Cancel
+
+    style.
+        :root {
+            /* Handle theme change in main script
+               Take care not to use the same names elsewhere */
+            --chatColor:rgb(255, 255, 255);
+            --sentColor: rgb(0, 0, 0);
+            --sentBackground: rgb(255, 255, 255);
+            --recievedColor: rgb(0, 0, 0);
+            --recievedBackground: rgb(200, 200, 200);
+            --mentionColor: rgb(25, 25, 200);
+            --mentionBackground: rgb(250, 225, 0);
+            --pmColor:rgb(250, 225, 0);
+            --pmBackground: rgb(200, 25, 25);
+        }
+
+        .fullPage {
+            display: grid;
+            grid-template-rows: 1fr 1.5rem 2rem;
+            grid-template-columns: auto 1fr;
+            #activeUsersList {
+                grid-row: 1;
+                grid-column: 1;
+                display: none;
+                resize: horizontal; /* requires overflow: auto */
+                overflow: auto;
+                width: min-content;
+                max-width: 50vw;
+                white-space: nowrap;
+                background-color: var(--chatColor);
+                border: 1px solid var(--highlightColor);
+
+                border-radius: 0.5rem;
+                p {
+                    width: 100%;
+                    padding: var(--defaultSpacing);
+                    border: 1px solid var(--highlightColor);
+                    border-radius: 0.5rem;
+                    cursor: pointer;
+                }
+            }
+            #messagesList {
+                grid-row: 1;
+                grid-column: 2;
+                overflow: auto;
+                background-color: var(--chatColor);
+                * { word-warp: break-word; }
+            }
+            #notification { 
+                grid-row: 2;
+                grid-column: 1 / span 2;
+                padding: 0.25rem;
+            }
+            #bottomLayout { 
+                display: flex;
+                grid-row: 3;
+                grid-column: 1 / span 2;
+                width: 100%;
+                button { cursor: pointer; }
+                input { flex-grow: 1; }
+                flex-wrap: nowrap;
+                * { 
+                    height: 100%;
+                    padding: 0.5rem;
+                    border-radius: 0.5rem;
+                }
+            }
+            .sentMessage, .receivedMessage {
+                margin: 0.25rem;
+                padding: 0.25rem;
+                border: 1px solid var(--highlightColor);
+                border-radius: 0.5rem;
+                max-width: 95%;
+                min-width: 55%;
+                text-align: left;
+            }
+            .sentMessage {
+                float: right;
+                color: var(--sentColor);
+                background-color: var(--sentBackground);
+                *  { color: inhert; background-color: inherit; }
+            }
+            .receivedMessage {
+                float: left;
+                color: var(--recievedColor);
+                background-color: var(--recievedBackground);
+                *  { color: inhert; background-color: inherit; }
+            }
+
+            .privateMessage {
+                color: var(--pmColor) !important;
+                background-color: var(--pmBackground) !important;
+                * { 
+                    color: var(--pmColor) !important;
+                    background-color: var(--pmBackground) !important;
+                }
+            }
+            .mentionMessage {
+                color: var(--mentionColor) !important;
+                background-color: var(--mentionBackground) !important;
+                *{
+                    color: var(--mentionColor) !important;
+                    background-color: var(--mentionBackground) !important;
+                }
+            }
+
+            #contextMenu {
+                display: none;
+                position: absolute;
+                background-color: white;
+                border: 1px solid var(--highlightColor);
+                border-radius: 0.2rem;
+                padding: 0.2rem;
+                p { 
+                    cursor: pointer;
+                    border-bottom: 1px solid var(--backgroundColor);
+                }
+                .kick { color: blueviolet; }
+                .ban { color: var(--alertColor); }
+                p:last-child { border: none; color: var(--accentColor);}
+            }
+        }
+
+    script(src="https://cdn.socket.io/4.8.1/socket.io.js") //- Online source. Has to match the package version.
+    //- Local source. In "app.js" add: app.get("/javascripts/socket.io.js", function(req, res) { res.sendFile(path.join(__dirname, "node_modules/socket.io/client-dist/socket.io.js")); });
+    //- script(src="/javascripts/socket.io.js")
+    script.
+        var socket = io("#{siteURL}", { path: "#{path}" });
+
+        // Toggle visibility of the side users list
+        function toggleUsersList() { 
+            if (activeUsersList.style.display === "" || activeUsersList.style.display === "none")
+            { activeUsersList.style.display = "block"; activeUsersList.style.width="min-content"; }
+            else { activeUsersList.style.display = "none"; }
+        }
+        
+        // Respond to "new user" event coming from the server
+        socket.on("new user", function(user_name, activeUsers) { 
+            updateUsersList(activeUsers);
+            notify(`${user_name} Connected...`);
+        });
+
+        // Respond to "user disconnected" event coming from the server
+        socket.on("user disconnected", function(user_name, activeUsers) { 
+            updateUsersList(activeUsers);
+            notify(`${user_name} Disconnected...`);
+        });
+
+        // Rewrite the side users list
+        function updateUsersList(activeUsers) {
+            activeUsersList.innerHTML ="";
+            activeUsers.map((activeUser) => { 
+                activeUsersList.innerHTML += `<p title = "Click for options..." onclick = "HandleUser(this); event.cancelBubble = true;">${activeUser.user_name}</p>`;
+            });
+        }
+
+        // display notification message "#notification". Reset it after timeOut (Default 2s).
+        function notify(message, timeOut = 2000){
+            notification.innerHTML = message;
+            setTimeout(()=>{ notification.innerHTML = ""; }, timeOut);
+        }
+
+        // Notify server that user is typing and send the message to server
+        inputField.addEventListener("keypress", async function inputchanged(e) {
+
+            // Emit 'typing' event to server
+            if (inputField.value) socket.emit("typing", "#{user_name}");
+
+            // Send the message to server
+            if(e.key === "Enter") {
+                if (!inputField.value) return;
+
+                var Info = { recieverName: userToHandle, messageOption: messageOption, message: inputField.value };
+                socket.emit("chat message", Info);
+
+                // Reset the input field
+                inputField.value = "";
+                inputField.title = "";
+                inputField.classList.remove("mentionMessage");
+                inputField.classList.remove("privateMessage");
+
+                // Clear the variables
+                userToHandle = "";
+                messageOption = 0;
+            }
+        });
+
+        // Respond to "typing" event from server
+        socket.on("typing", function (user_name) { notify(`${user_name} is typing...`); });
+
+        // Respond to "chat message" event from server
+        socket.on("chat message", function(info) {
+            // Append coming new messages to the list
+            var time = new Date();
+            var formattedTime = time.toLocaleString("en-GB", { hour: "numeric", minute: "numeric", second: "numeric" });
+
+            var extraClass ="";
+            switch (info.messageOption) {
+                case 1:
+                    if(info.recieverName === "#{user_name}") extraClass = " mentionMessage";
+                    break;
+                case 2:
+                    extraClass = " privateMessage";
+                    break;
+            }
+            var classList = ((info.senderName === "#{user_name}")? "sentMessage" : "receivedMessage") + extraClass;
+            var talkingUser = (info.senderName !== "#{user_name}")? `<b>${info.senderName}: </b>` : "";
+
+            messagesList.innerHTML += `<p class="${classList}">${talkingUser}${info.message}<sub><b>&emsp;${formattedTime}</b></sub></p>`;
+
+            messagesList.scroll({ top: messagesList.scrollHeight, behavior: 'smooth' });
+        });
+
+        // Display the context menu and store the selected user name in 'userToHandle'
+        function HandleUser(x) { 
+            if (contextMenu.style.display === "" || contextMenu.style.display === "none") { 
+                var HorzPos = parseInt( x.offsetLeft + x.offsetWidth );
+                var topPos = parseInt( x.offsetTop + x.offsetHeight / 2 );
+
+                if(document.documentElement.dir === "rtl") { contextMenu.style.right = (document.body.clientWidth - x.offsetLeft) + "px"; }
+                else { contextMenu.style.left = HorzPos + "px"; }
+                
+                contextMenu.style.top = topPos + "px";
+                contextMenu.style.display = "block";
+                // Store the user's name
+                userToHandle = x.textContent;
+            }
+        }
+
+        // Variable to hold the desired user name to mention or pm
+        var userToHandle = "";
+        var messageOption = 0; // { 0: plain, 1: mention, 2: pm }
+
+        // Dismiss the context menu
+        function dismissContextMenu() { contextMenu.style.display = "none"; }
+
+        // Initiate a message with a mention to someone
+        function MentionUser() { 
+            inputField.title = `MENTION ${userToHandle}:`; inputField.focus();
+            inputField.classList.remove("privateMessage");
+            inputField.classList.add("mentionMessage");
+            messageOption =1;
+            dismissContextMenu();
+        }
+
+        // Initiate a private message to someone
+        function PMUser() { 
+            inputField.title = `PM ${userToHandle}:`; inputField.focus();
+            inputField.classList.remove("mentionMessage");
+            inputField.classList.add("privateMessage");
+            messageOption =2;
+            dismissContextMenu();
+        }
+
+        // Cancel the previous intiated message
+        function CancelHandling() {
+            inputField.value = ""; inputField.focus();
+            inputField.classList.remove("mentionMessage");
+            inputField.classList.remove("privateMessage");
+            messageOption =0;
+            dismissContextMenu();
+        }
+
+        // Kick someone out of the chat
+        function KickUser() { 
+            if (confirm(`Kick ${userToHandle}?!`) === true) { socket.emit("kick user", userToHandle); }
+            dismissContextMenu();
+            userToHandle = "";  // Reset the variable
+        }
+
+        // Kick from chat + Ban someone from the site altogether
+        function BanUser() { 
+            if (confirm(`Ban ${userToHandle}?! You will be redirected.`) === true) { socket.emit("ban user", userToHandle); }
+            dismissContextMenu();
+            userToHandle = "";  // Reset the variable
+        }
+
+        // Respond to "server notification" coming from the server
+        socket.on("server notification", function (message) { notify(`${message} ...`); });
+        
+        // Respond to "redirect" coming from the server
+        socket.on("redirect", function(destination){ 
+            window.location.href = destination;
+        });
+

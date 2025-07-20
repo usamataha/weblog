@@ -1,0 +1,19 @@
+if videos.length
+
+    each video in videos
+
+        div(class="catalogItem")
+            div(class="dataDiv")
+                img(src=video.cover_s_url alt=`${video.title}`)
+                p(class="title") #{video.title}
+                p(class="subtitle") #{video.date_added.toLocaleString("en-GB", { year: "numeric", month: "long", day: "numeric" })}  
+            
+            div(class="navDiv")
+                p(class="tags")
+                    - var tags = video.tag;
+                    if tags.length
+                        each tag in tags
+                            a(href=`${tag.url}/details`) #{tag.name}
+
+                p(class="link")
+                    a(href=`${video.url}/details`) Watch

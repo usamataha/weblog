@@ -1,0 +1,551 @@
+:root {
+  --menuHeight: 2rem;
+  --menuPadding: 0.25rem;
+  --footerHeight: 2rem;
+  --footerPadding: 0.25rem;
+  --formPadding: 0.25rem;
+  --defaultSpacing: 0.5rem;
+  --verticalMenuWidth: 8rem;
+  --sidebarWidth: 15rem;
+  --quickAccessWidth: 36px;
+  --accentColor: rgb(16, 128, 255);
+  --defaultColor: rgb(0, 0, 0);
+  --backgroundColor: rgb(255, 255, 255);
+  --menuColor: rgb(248, 248, 255);
+  --footerColor: rgb(245, 245, 245);
+  --highlightColor: rgb(211, 211, 211);
+  --quickAccessColor: rgb(20,20,20);
+  --alertColor: rgb(216, 32, 32);
+  --imageInvert: 0%;
+}
+
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+  color: var(--defaultColor);
+  background-color: var(--backgroundColor);
+  /*border: 1px solid yellow;*/
+}
+*:focus { outline: 1px solid var(--accentColor); }
+
+/* Hide everything till the page is ready. Restore visibility in JavaScript */
+html { visibility: hidden; }
+
+/* View is the same size as the browser window */
+html, body {
+  position: absolute;
+  top: 0; left:0;
+  min-width: 100dvw; max-width: 100dvw; min-height: 100dvh; max-height: 100dvh;
+}
+
+/* Three rows grid view
+* 1st row: Menu
+* 2nd row: Page body
+* 3rd row: Footer
+*/
+body {
+  font-family: 'Times New Roman', serif;
+  display: grid;
+  grid-template-rows: var(--menuHeight) 1fr var(--footerHeight);
+  overflow: hidden;
+}
+
+.row {
+  display: grid;
+  width: 100%;
+  max-width: 100dvw;
+}
+
+.column { display: inline-block; }
+
+/* Warning messages */
+.alert { color: var(--alertColor) !important; }
+.alert:hover { color: White !important; background-color: var(--alertColor) !important; }
+
+/* Hyperlinks */
+a { 
+  text-decoration: none;
+  color: var(--accentColor);
+  cursor: pointer;
+}
+
+/* Inline svg images container */
+.svgBox {
+  width: 36px;
+  height: 36px;
+}
+/* Inline svg image fills the whole container */
+.inlineSVG {
+  width: 100%; height: 100%;
+  /* Control the color of the svg's path */
+  path{ fill: var(--accentColor); }
+}
+
+/* 1st row: Menu. Has 4 columns:
+* 1st column: menu buttons
+* 2nd column: quick search box
+* 3rd column: navigation buttons
+* 4th column: size boxes
+*/
+#menu {
+  grid-row: 1;
+  grid-template-columns: auto 1fr auto auto;
+  *:not(img) { background-color: var(--menuColor); }
+  a { 
+    padding: 0 var(--menuPadding) 0 var(--menuPadding);
+    color: var(--defaultColor);
+  }
+  a:hover { 
+    background-color: var(--highlightColor);
+    border-radius: calc(2 * var(--menuPadding));
+  }
+  img { background-color: transparent; filter: invert(var(--imageInvert)); }
+}
+
+/* Menu buttons*/
+#col-menuButtons {
+  overflow: hidden;
+  grid-column: 1;
+  padding: var(--menuPadding) 0 var(--menuPadding) 0;
+  img { height: calc(var(--menuHeight) - 2 * var(--menuPadding)); vertical-align: middle; }
+}
+/* Sub menus */
+.popup:hover .subMenu { display: inline; }
+.subMenu {
+  display: none;
+  position: absolute;
+  min-width: var(--verticalMenuWidth);
+  border: solid 1px var(--accentColor);
+  * { display: block; }
+  z-index: 999;
+}
+
+/* quick search box */
+#col-menuSearch {
+  grid-column: 2;
+  padding: var(--menuPadding) var(--menuHeight) var(--menuPadding) var(--menuHeight);
+  input {
+    width: 100%;
+    color: var(--defaultColor);
+    background-color: var(--backgroundColor);
+    padding: var(--menuPadding);
+    border-radius: calc(2 * var(--menuPadding));
+    text-align: center;
+    border: none;
+  }
+}
+/* quick search dialog */
+#qSearchDlg { 
+  border: none;
+  outline: solid var(--accentColor) 1px;
+  position: absolute;
+  font-size: small;
+  cursor: pointer;
+  p { 
+    border-bottom: 1px solid var(--highlightColor);
+    color: var(--accentColor);
+  }
+  *:last-child { border: none; }
+  img { height: 2.5rem; vertical-align: middle; }
+}
+
+/* navigation buttons */
+#col-menuNav { grid-column: 3; }
+/* size boxes */
+#col-menuSizeBox { grid-column: 4; }
+
+#col-menuNav, #col-menuSizeBox { 
+  padding-top: calc(2 * var(--menuPadding));
+  a { padding: calc(2 * var(--menuPadding)); }
+  a:hover { border-radius: 0; }
+}
+
+/* Vertical menu appears only on narrow screens */
+#verticalMenuSpan {
+  /* Button to open vertical menu */
+  grid-row: 1;
+  display: none;
+  padding: calc(2 * var(--menuPadding));
+  a { padding: calc(var(--menuPadding) / 2) 0 calc(var(--menuPadding) / 2) 0; }
+}
+/* The vertical menu */
+#verticalMenu {
+  z-index: 1000;
+  display: none;
+  position: absolute;
+  border: solid 1px var(--accentColor);
+  a {
+    color: var(--defaultColor);
+    background-color: var(--backgroundColor);
+    padding-left: var(--menuPadding);
+    width: 100%;
+  }
+  a:hover {
+    color: White;
+    background-color: var(--accentColor);
+  }
+}
+
+/* 2nd row
+* Case 1: homePage. The middle section is devided into 3 columns.
+* 1st column: quick access buttons
+* 2nd column: side bar
+* 3rd column: page content
+* the "grid-template-columns" property is calculated in the script file
+*/
+#homePage {
+  grid-row: 2;
+  width: 100dvw;
+  /* Prevent the row from expanding to a children's height */
+  height: calc(100dvh - var(--menuHeight) - var(--footerHeight) );
+}
+
+/* quick access buttons */
+#quickAccess {
+  grid-column: 1;
+  width: var(--quickAccessWidth);
+  background-color: var(--quickAccessColor);
+  * { background-color: var(--quickAccessColor); }
+  img { 
+    width: calc(0.75 *  var(--quickAccessWidth));
+    margin: calc(0.25 *  var(--quickAccessWidth)) calc(0.125 *  var(--quickAccessWidth))
+            calc(0.25 *  var(--quickAccessWidth)) calc(0.125 *  var(--quickAccessWidth));
+  }
+}
+.quickAccessBtn, .quickAccessBtnActive { cursor: pointer; }
+.quickAccessBtn { opacity: 0.5; }
+.quickAccessBtn:hover, .quickAccessBtnActive { opacity: 1.0; }
+
+/* side bar */
+#sideBar { 
+  grid-column: 2;
+  width: 0;
+  resize: horizontal;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: auto;
+  border-right: 1px solid var(--accentColor);
+  border-left: 1px solid var(--accentColor);
+}
+div[name="sideTab"] { display: none; margin: var(--menuPadding); }
+
+/* The search form in the sideTab */
+#searchForm {
+  fieldset {
+    border: none;
+    width: inherit;
+    grid-template-columns: 1fr;
+    font-size: small;
+    .formLabels, .formInputs, .formButtons, .formErrors, .searchFormResults { grid-column: 1/3; }
+    .formInputs { display: inline-flex; flex-wrap: wrap; }
+    #searchFormResults { * { display: block; padding: 0.1rem 0 0 0; } *:hover { color: var(--defaultColor); } }
+
+    * { padding: var(--menuPadding); margin: 0; width: inherit;}
+  }
+}
+/* The Apps container in the sideTab */
+#AppsTab {
+  .svgBox {
+    width: 46px;
+    height: 46px;
+    padding: var(--menuPadding); 
+    float: left;
+  }
+.svgBox:hover { border: 1px solid var(--highlightColor); }
+}
+
+/* page content */
+#homePageIntro { 
+  /* For landing page only*/
+  grid-column: 3;
+  overflow: auto;
+  font-size: larger;
+  h1, h2, h3, h4, h5, h6 { color: var(--accentColor); text-align: center; }
+  p { text-align: justify; white-space: wrap;}
+
+  * { background-color: transparent; margin: var(--defaultSpacing); }
+
+}
+
+/* 2nd row 
+* Case 2: The middle section is not devided
+* Use this div to wrap multiple items
+*/
+.fullPage, .contactPage {
+  grid-row: 2;
+  width: 100dvw;
+  overflow: auto;
+}
+
+/* The contact info page 
+* 1st column: links
+* 2nd column: map
+*/
+.contactPage {
+  display: grid;
+  grid-template-columns: 50dvw 50dvw;
+  font-weight: bolder;
+
+  .links, .map { width: 100%; }
+  h1 { color: var(--accentColor); }
+
+  /* 1st column: links */
+  .links {
+    grid-column: 1;
+    margin-top: 100px;
+    padding: var(--defaultSpacing);
+  }
+  .contactLink {
+    width: 100%;
+    display: inline-flex;
+    flex-direction: row;
+  }
+  .svgBox {
+    width: 40px;
+    height: 40px;
+    margin: var(--defaultSpacing);
+  }
+  
+  /* Align text with image vertically */
+  .info { padding-top: calc(var(--defaultSpacing) + 20px - 0.5rem); }
+  
+  /* 2nd column: map */
+  .map { 
+    grid-column: 2;
+    padding: calc(2 * var(--defaultSpacing));
+    min-height: 450px;
+    border: 0;
+  }
+}
+
+/* 3rd row: Footer. Has 3 columns:
+* 1st column: copyright 
+* 2nd column: content listing buttons
+* 3rd column: social links
+*/
+#footer {
+  grid-row: 3;
+  grid-template-columns: auto auto calc(5 * var(--footerHeight));
+
+  img {
+    height: var(--footerHeight);
+    background-color: transparent;
+    filter: invert(var(--imageInvert));
+  }
+  img:hover { 
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+  * {
+    color: var(--defaultColor);
+    background-color: var(--footerColor);
+    overflow: hidden;
+  }
+}
+
+/* copyright */
+#col-footerCopyright {
+  grid-column: 1;
+  padding: calc(2 * var(--footerPadding)) 0 calc(2 * var(--footerPadding)) 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* content listing buttons */
+#col-footerLists {
+  grid-column: 2;
+  padding-top: var(--footerPadding);
+  a { padding: var(--footerPadding); }
+  a:hover { border: solid 1px var(--accentColor); }
+}
+
+/* social links */
+#col-footerSocial { grid-column: 3; }
+
+/* All forms 
+* Usually will occupy the 2nd row
+*/
+form {
+  overflow: auto;
+  margin:var(--formPadding);
+
+  /* Fieldset has two columns 
+  * 1st column: labels
+  * 2nd column: inputs
+  * should convert to one column on narrow screens
+  */
+  fieldset { grid-template-columns: 25% 75%; * { margin: var(--formPadding); padding: var(--formPadding); } }
+
+  legend { * { color: var(--accentColor); } }
+  
+  .formLabels { grid-column: 1; }
+  .formInputs { grid-column: 2; }
+  .formButtons, .formErrors { grid-column: 1/3; }
+  .formButtons { text-align: center; }
+
+  textarea {
+    min-height: 10rem;
+    resize: vertical;
+    overflow: auto;
+  }
+
+  button {
+    width: 15%;
+    background-color: var(--accentColor);
+    color: white;
+    opacity: 80%;
+    cursor: pointer;
+    border: none;
+  }
+
+  button:hover { opacity: 100%; }
+
+  .formErrors { 
+    color:var(--alertColor);
+    list-style-position: inside;
+    li { list-style-type: "🚫 "; }
+  }
+
+  .CheckBoxContainer {
+    display: inline-block;
+  }
+}
+
+/* Table in users list page 
+* Has to be wrapped inside the "#fullPage" div
+*/
+.itemsList {
+  width: 100%;
+  border-collapse: collapse;
+  caption { z-index: 13; }
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 12;
+  }
+  tbody { z-index: 11; }
+  th { color:white; background-color: var(--accentColor); }
+  tr { border-bottom: 1px solid var(--accentColor); }
+  caption, th, td {
+    padding: var(--menuPadding);
+    p { float: left;}
+    
+    text-align: left;
+    span { text-wrap: nowrap; padding: var(--menuPadding); }
+
+    a {
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    a:hover { border: 1px solid var(--highlightColor); opacity: 0.7; }
+  }
+}
+
+/* Catalog items container. All items should have the same height */
+.catalogItems { display: inline-flex; float: left; flex-wrap: wrap; }
+
+/* Catalog item card style 
+* Two items should fill the view width on narrow screens
+*/
+.catalogItem {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 15rem;
+  padding: var(--menuPadding);
+  
+  * { width: 100%; }
+
+  .title {
+    font-size: 1.10rem;
+    font-weight: bolder;
+    text-align: left;
+  }
+  .subtitle {
+    font-size: 0.90rem;
+    font-weight: bold;
+    font-style: italic;
+    text-align: right;
+  }
+
+  /*The .navDiv contains the .tags and .link is docked to the bottom*/
+  .navDiv{ margin-top: var(--menuPadding); align-self: flex-end; }
+
+  .tags {
+    font-size: 0.75rem;
+    display: inline-block;
+    text-align: left;
+    a { font-size: 0.75rem; margin: var(--menuPadding);}
+  }
+  
+  .link {
+    font-size: 1rem;
+    text-align: center;
+
+    a { 
+      padding: var(--menuPadding);
+      display: block;
+      color: var(--backgroundColor); 
+      background-color: var(--accentColor);
+    }
+  }  
+}
+.catalogItem:hover { border: 1px solid var(--accentColor); }
+
+.summary {
+  * { margin: var(--defaultSpacing); }
+  h1, h2, h3, h4, h5, h6 { color: var(--accentColor); text-align: center; }
+  img { float: right; min-width: 15dvw; max-width: 20dvw; }
+}
+.summary::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.contentframe { border:none; width:100%; height: calc(100dvh - var(--menuHeight) - var(--footerHeight) ); }
+
+/* Narrow screens adaptation */
+@media screen and (max-width: 800px) {
+
+  :dir(rtl) {
+    #verticalMenuSpan:hover #verticalMenu {
+      .subMenu { right: var(--verticalMenuWidth); }
+    }
+  }
+  :dir(ltr) {
+    #verticalMenuSpan:hover #verticalMenu {
+      .subMenu { left: var(--verticalMenuWidth); }
+    }
+  }
+
+  /* Show the vertical menu button */
+  #verticalMenuSpan { display: block; }
+  #verticalMenuSpan:hover #verticalMenu { 
+    display: block;
+    width: var(--verticalMenuWidth);
+    a { display: block; }
+    span { display: flex; }
+  }
+  /* Hide the horizontal menu */
+  #col-menuButtons { display: none; }
+
+  /* Form fieldsets convert to one column */
+  fieldset {
+    grid-template-columns: 1fr;
+    .formLabels, .formInputs, .formButtons, .formErrors { grid-column: 1/3; }
+  }
+
+  /* Two catalog items fill the entire width leaving a space for the scroll bar */
+  .catalogItem { margin-right: 2dvw; margin-bottom: var(--defaultSpacing); width: 45dvw; max-width: 45dvw;  }
+  
+  /* Contact page converts to one column */
+  .contactPage {
+    grid-template-columns: 1fr;
+    .links, .map { grid-column: 1/3; }
+    .links { margin-top: 0; }
+  }
+}
+

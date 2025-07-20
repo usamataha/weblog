@@ -1,0 +1,181 @@
+extends layout
+
+block content
+    form(method="post" autocomplete="on" action="/users/dashboard" onsubmit="userDashboard(event, this)")
+        fieldset(class= "row")
+            legend
+                h2() #{user.user_name}
+
+            if user.gender === "female"
+                img(id="avatar" src="/images/engFem.png" alt="avatar")
+            else
+                img(id="avatar" src="/images/engM.png" alt="avatar")
+
+            label(class="formLabels" for="gender" locKey="Gender:") Gender:
+            select(class="formInputs" id="gender" name="gender" onchange="changeGender(this.options[this.selectedIndex].value)")
+                option(value="" locKey="-- Select Gender --") -- Select Gender (default is male) --
+                option(value="male" locKey="Male") Male
+                option(value="female" locKey="Female") Female
+
+            label(class="formLabels" for="role" locKey="Role:") Role:
+            input(class="formInputs" id="role" type="text" name="role" value=`${user.role}` disabled)
+
+            label(class="formLabels" for="email" locKey="Email:") Email:
+            input(class="formInputs" id="email" type="email" name="email" value=`${user.email}` disabled)
+
+
+            div(class="formInputs")
+                if !user.shareEmail
+                    input(class="formInputs" id="shareEmail" value="shareEmail" name="shareEmail" type="checkbox" unchecked)
+                else
+                    input(class="formInputs" id="shareEmail" value="shareEmail" name="shareEmail" type="checkbox" checked)
+                label(for="shareEmail" locKey="Share Email") Share my Email with other users.
+
+
+            label(class="formLabels" for="language" locKey="Language") Language (ع)
+            select(class="formInputs" id="language" name="language" onchange="setLanguage(this.options[this.selectedIndex].value)")
+                option(value="" locKey="-- Select Language --") -- Select Language (default is English) --
+                option(value="en" locKey="English") English
+                option(value="ar" locKey="Arabic") العربية
+
+            label(class="formLabels" for="theme" locKey="Theme") Theme
+            select(class="formInputs" id="theme" name="theme" onchange="selectTheme(this.options[this.selectedIndex].value)")
+                option(value="" locKey="-- Select Theme --") -- Select Theme (default is Light) --
+                option(value="light" locKey="Light") Light
+                option(value="dark" locKey="Dark" ) Dark
+                option(value="custom" locKey="Custom Theme") Custom (Shif from light)
+
+            -var r = user.customTheme[0];
+            -var g = user.customTheme[1];
+            -var b = user.customTheme[2];
+            -var i = user.customTheme[3];
+
+            div(class="formInputs" id="customThemeDlg" name="customThemeDlg")
+                label(class="rangeLabels" for="red" locKey="Red Shift") Red Shift
+                input(class="red range" id="red" name="rgb" type="range" min="0" max="255" value=`${r}` onchange="customTheme()")
+                br
+                label(class="rangeLabels" for="green" locKey="Green Shift") Green Shift
+                input(class="green range" id="green" name="rgb" type="range" min="0" max="255" value=`${g}` onchange="customTheme()")
+                br
+                label(class="rangeLabels" for="blue" locKey="Blue Shift") Blue Shift
+                input(class="blue range" id="blue" name="rgb" type="range" min="0" max="255" value=`${b}` onchange="customTheme()")
+                br
+                label(class="rangeLabels" for="invert" locKey="Image Invert") Image Invert
+                input(class="invert range" id="invert" name="invert" type="range" min="0" max="100" value=`${i}` onchange="customTheme()")
+
+            label(class="formLabels" for="password" locKey="New Password:") New Password:
+            input(class="formInputs" id="password" type="password" placeholder="New Password" name="password")
+
+            label(class="formLabels" for="confirm_password" locKey="Confirm New Password:") Confirm New Password:
+            input(class="formInputs" id="confirm_password" type="password" placeholder="Confirm New Password" name="confirm_password")
+
+            a(class="formLabels alert" onclick="confirmRedirect('delete')" locKey="Delete Account") Delete Account
+
+            div(class="formButtons")
+                button(id="submit" type="submit" locKey="Save") Save
+
+    script.
+        function changeGender(gender) {
+            switch(gender) {
+                case "male":
+                    avatar.src="/images/engM.png"
+                    break;
+                case "female":
+                    avatar.src="/images/engFem.png"
+                    break;
+            }
+        }
+
+        function selectTheme(theme) {
+            switch(theme) {
+                case "light":
+                    customThemeDlg.style.display="none";
+                    lightTheme();
+                    break;
+
+                case "dark":
+                    customThemeDlg.style.display="none";
+                    darkTheme();
+                    break;
+
+                case "custom":
+                    customThemeDlg.style.display="block";
+                    break;
+            }
+        }
+
+        function customTheme() {
+            lightTheme();                                           // Back to defaults
+            var rgbShift = [red.value, green.value, blue.value];    // Read each range value
+            var imageInvert = invert.value;
+
+            // Finally, store the theme
+            window.localStorage.setItem("theme", "custom");
+            window.localStorage.setItem("customThemeRGBShift", JSON.stringify(rgbShift));
+            window.localStorage.setItem("customThemeImageInvert", imageInvert);
+
+            // Apply the custom theme
+            applyTheme(rgbShift, imageInvert);
+        }
+
+        /**
+        * Function to return dashboard response from server using fetch method to avoid reloading
+        * @param {event} event - the event used to trigger the function. It's default will be suppressed
+        * @param {sender} sender - the form that sent the search data.
+        */
+        async function userDashboard(event, sender) {
+            event.preventDefault();
+            var formData = new FormData(sender);
+            try {
+                await fetch(sender.action, { method: "POST", 
+                headers: { "Content-Type": "application/x-www-form-urlencoded" }, 
+                body: new URLSearchParams(formData) })
+
+                .then((response) => {
+                    if (response.status !== 200) {
+                        response.json().then((message) => {
+                            window.alert(`Error!\r\nResponse status: ${response.status}\r\nMessage: ${message}`);
+                            return; });
+                    }
+                    else { response.json().then((user) => { setUserData(user); }); }
+                });
+            }
+            catch (error) { window.alert(error); }
+        }
+
+    style.
+
+        #customThemeDlg { display: none; text-align=left; }
+        .rangeLabels { 
+            width: 25%;
+            float: left;
+            text-align: right;
+            height: 1.3rem;
+        }
+
+        .range {
+            -webkit-appearance: none;
+            width: 70%;
+            float: right;
+            height: 1.3rem;
+            background:White;
+            outline: 1px solid var(--accentColor);
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .range:hover { opacity: 1; }
+
+        .range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 1.3rem;
+            height: 1.3rem;
+            cursor: pointer;
+        }
+
+        .red::-webkit-slider-thumb { background: Red; }
+        .green::-webkit-slider-thumb { background: Green; }
+        .blue::-webkit-slider-thumb { background: Blue; }
+        .invert::-webkit-slider-thumb { background: rgb(128, 128, 128); }

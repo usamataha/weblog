@@ -1,0 +1,20 @@
+if books.length
+
+    each book in books
+
+        div(class="catalogItem")
+            div(class="dataDiv")
+                img(src=book.cover_s_url alt=`${book.title}`)
+                p(class="title") #{book.title}
+                p(class="subtitle") #{book.author}
+                p(class="subtitle") #{book.date_published.toLocaleString("en-GB", { year: "numeric", month: "long", day: "numeric" })} 
+            
+            div(class="navDiv")
+                p(class="tags")
+                    - var tags = book.tag;
+                    if tags.length
+                        each tag in tags
+                            a(href=`${tag.url}/details`) #{tag.name}
+
+                p(class="link")
+                    a(href=`${book.url}/details`) Read

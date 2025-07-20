@@ -1,0 +1,62 @@
+doctype html
+html(lang="en")
+  head
+    title(locKey="Weblog") Weblog
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content")
+    link(rel="stylesheet", href="/stylesheets/style.css")
+    link(rel="icon", type="image/svg+xml", href="/images/fav_icon.svg")
+    script(src="/javascripts/script.js")
+      
+  body
+    div(id="menu" class="row")
+      span(id="verticalMenuSpan")
+        a(locKey="Menu") Menu
+        span(id="verticalMenu")
+          include ./menuButtons.pug
+      span(id="col-menuButtons" class="column")
+        img(src="/images/fav_icon.svg" alt="Site logo")
+        span()
+          include ./menuButtons.pug
+
+      span(id="col-menuSearch" class="column")
+        input(id="menu_qSearch" type="search" placeholder="⌕ Quick Search...")
+
+      span(id="col-menuNav" class="column")
+        a(onclick="javascript:window.history.back();" title="Back" locKey="←" locKeyTitle="Back") ←
+        a(onclick="javascript:location.reload(true);" title="Refresh" locKeyTitle="Refresh") ⟳
+        a(onclick="javascript:window.history.forward();" title="Forward" locKey="→" locKeyTitle="Forward") →
+
+
+      span(id="col-menuSizeBox" class="column")
+        a(onclick="javascript:document.exitFullscreen()" title="Exit Fullscreen" locKeyTitle="Exit Fullscreen") ▁ 
+        a(onclick="javascript:document.documentElement.requestFullscreen()" title="Fullscreen" locKeyTitle="Fullscreen") ❏
+        a(id="session" title="Extend your session" class="alert" onclick="refreshsession();")
+
+    block content
+    
+    div(id="footer" class="row")
+      span(id="col-footerCopyright" class="column" title="© 2025, Usama Taha, All rights reserved." locKey="Copyright") © 2025, Usama Taha, All rights reserved.
+      span(id="col-footerLists" class="column")
+        a(href="/catalog/tutorial/list" title="Tutorials" locKeyTitle="Tutorials") 📄
+        a(href="/catalog/video/list" title="Videos" locKeyTitle="Videos") 🎬
+        a(href="/catalog/book/list" title="Books" locKeyTitle="Books") 📖
+        a(href="/catalog/tag/list" title="Tags" locKeyTitle="Tags") 🖇
+
+      span(id="col-footerSocial" class="column")
+        a(href="https://www.google.com/" title="Google")
+          img(src="/images/icon_social_google.svg" alt="Google")
+
+        a(href="https://www.youtube.com/" title="Youtube")
+          img(src="/images/icon_social_youtube.svg" alt="Youtube")
+
+        a(href="https://discord.com/" title="Discord")
+          img(src="/images/icon_social_discord.svg" alt="Discord")
+
+        a(href="https://web.telegram.org/" title="Telegram")
+          img(src="/images/icon_social_telegram.svg" alt="Telegram")
+
+        a(href="https://github.com/" title="Github")
+          img(src="/images/icon_social_github.svg" alt="Github")
+
+    dialog(id="qSearchDlg")

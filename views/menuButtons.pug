@@ -1,0 +1,15 @@
+a(href="/" locKey="Home") Home
+a(href="/users/login" locKey="Login") Login
+a(href="/users/dashboard" locKey="Dashboard") Dashboard
+a(href="/contact" locKey="Contact") Contact
+span(class="popup")
+    a(locKey="Theme") Theme
+    div(class="subMenu")
+      a(name="theme" value="light" onclick="lightTheme()" locKey="Light") Light
+      a(name="theme" value="dark" onclick="darkTheme()" locKey="Dark") Dark
+span(class="popup")
+    a(locKey="Language") Language (ع)
+    div(class="subMenu")
+      a(name="language" value="en" onclick="setLanguage('en')" locKey="English") English
+      a(name="language" value="ar" onclick="setLanguage('ar')") العربية
+a(class="alert" onclick="confirmRedirect('/users/logout', 'This will end your current session!'); window.localStorage.clear();" locKey="Logout") Logout

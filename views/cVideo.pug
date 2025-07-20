@@ -1,0 +1,20 @@
+extends layout
+
+block content
+
+    div(class="fullPage")
+        div(class="summary")
+            img(src=video.cover_l_url alt=`${video.title}`)
+            h2 #{video.title}
+            br
+            p() #{video.summary}
+
+            - var tags = video.tag;
+            if tags.length
+                each tag in tags
+                    a(href=`${tag.url}/details`) #{tag.name}
+
+        iframe(class="contentframe" title="video" src=`${video.video_url}`)
+
+
+            

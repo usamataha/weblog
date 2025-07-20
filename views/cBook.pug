@@ -1,0 +1,20 @@
+extends layout
+
+block content
+
+    div(class="fullPage")
+        div(class="summary")
+            img(src=book.cover_l_url alt=`${book.title}`)
+            
+            h2 #{book.title}
+            h5 By: #{book.author}
+            h5 Published: #{book.date_published.toLocaleString("en-GB", { year: "numeric", month: "long", day: "numeric" })}
+            br
+            p() #{book.summary}
+
+            - var tags = book.tag;
+            if tags.length
+                each tag in tags
+                    a(href=`${tag.url}/details`) #{tag.name}
+            p()
+                a(href=`${book.book_url}` target="_blank" rel="noreferrer nofollow") Go to page
