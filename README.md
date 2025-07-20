@@ -4,4 +4,4 @@
 
 You can visit alive version of the site <a href="https://weblog-hzfg.onrender.com">here</a>.
 <br>
-Read the complete tutorial on my <a href="https://render.com/">site</a>.
+Read the complete tutorial on my <a href="https://weblog-hzfg.onrender.com/catalog/tutorial/687cc7f066526fc02459616f/details">site</a>.
