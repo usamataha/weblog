@@ -29,7 +29,7 @@ router.get('/contact', async function(req, res) {
 
 /* Search */
 router.post('/search', async function(req, res) {
-  var keywords = req.body.keywordFilter.split(/[ ,-/./+]+/).filter(Boolean);
+  var keywords = req.body.keywordFilter.split(/[ ,-]+/).filter(Boolean);
   if (keywords.length === 0) { res.status(400).json('Bad Request'); return; }
   var searchResults=[];
   var regexStr = keywords.map(String).join('|');
@@ -83,7 +83,7 @@ router.post('/search', async function(req, res) {
 /* Quick Search */
 router.get("/qsearch/:searchString", async function(req, res) {
   var searchResults=[];
-  var regexStr = req.params.searchString.split(/[ ,-/./+]+/).filter(Boolean).map(String).join("|");
+  var regexStr = req.params.searchString.split(/[ ,-]+/).filter(Boolean).map(String).join("|");
   if (regexStr === "") { res.status(400).json('Bad Request'); return; }
   var query = {title: {$regex: regexStr, $options: "i"}};
   var projection = {title: 1, url: 1, cover_s_url: 1};
