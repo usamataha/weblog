@@ -16,7 +16,7 @@ router.get("/:id/verify/:emailToken", [auth.IsRegistered, auth.IsValidToken], us
 router.get('/login', userController.userLogin_get);
 
 // POST request for user login.
-router.post('/login', [auth.IsRegistered, auth.IsBlacklisted, auth.IsBanned, auth.IsAuthentic],
+router.post('/login', [auth.IsRegistered, auth.IsVerified, auth.IsBlacklisted, auth.IsBanned, auth.IsAuthentic],
     userController.userLogin_post);
 
 // GET request to refresh session.
