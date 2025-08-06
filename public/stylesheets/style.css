@@ -188,7 +188,7 @@ a {
 }
 
 /* 2nd row
-* Case 1: homePage. The middle section is devided into 3 columns.
+* Case 1: homePage. The middle section is divided into 3 columns.
 * 1st column: quick access buttons
 * 2nd column: side bar
 * 3rd column: page content
@@ -269,7 +269,7 @@ div[name="sideTab"] { display: none; margin: var(--menuPadding); }
 }
 
 /* 2nd row 
-* Case 2: The middle section is not devided
+* Case 2: The middle section is not divided
 * Use this div to wrap multiple items
 */
 .fullPage, .contactPage {
