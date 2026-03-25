@@ -26,14 +26,14 @@ app.use(helmet.contentSecurityPolicy({ directives: {
   "img-src": ["'self'", "https: data:"],
   }
 }));
-
+/*
 var limiter = RateLimit({
   windowMs: 60000,    // How long to remember requests for, in milliseconds. (1 minute)
   limit: parseInt(process.env.REQ_RATE_LIMIT_PER_MIN)
 });
 // Apply rate limiter to all requests
 app.use(limiter);
-
+*/
 var debug = require('debug')('weblog:app');
 var dotenv = require('dotenv').config();          // Responsible for environment variables.
 var mongoose = require('mongoose');               // Responsible for the database.
