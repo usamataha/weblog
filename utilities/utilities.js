@@ -57,8 +57,6 @@ function randomHexString(nbytes) {
 async function sendEMail(email, subject, htmlContent) { 
     var emailTransporter = nodemailer.createTransport({
       service: process.env.MAIL_SERVICE,
-      port: parseInt(process.env.MAILING_PORT),
-      secure: false,
       auth: {
         type: 'login',
         user: process.env.MAIL_ACCOUNT,
